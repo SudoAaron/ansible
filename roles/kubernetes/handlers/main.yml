@@ -1,0 +1,7 @@
+---
+- name: fetch_kubeconfig_file
+  fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: ~/.kube/configs/k3s.yaml
+    flat: yes
+  delegate_to: "{{ groups['kubernetes'] | first }}"

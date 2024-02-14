@@ -1,0 +1,53 @@
+---
+- name: Download k3s installer script
+  get_url:
+    url: "https://get.k3s.io"
+    dest: "/tmp/install-k3s.sh"
+    mode: "0755"
+
+- name: Run k3s install script on the first host
+  shell: "/tmp/install-k3s.sh"
+  args:
+    executable: /bin/bash
+  async: 600
+  poll: 0
+  register: k3s_install_result
+
+- name: Wait for k3s server to start
+  wait_for:
+    port: 6443
+    delay: 10
+    timeout: 600
+  delegate_to: localhost
+  notify: fetch_kubeconfig_file
+  when: k3s_install_result is succeeded
+
+- name: Retrieve k3s server token from the first host
+  shell: "cat /var/lib/rancher/k3s/server/node-token"
+  register: k3s_server_token
+  delegate_to: "{{ groups['kubernetes_masters'][0] }}"
+  ignore_errors: true
+
+- name: Display k3s server token
+  debug:
+    msg: "K3s server token: {{ k3s_server_token.stdout }}"
+  when: k3s_server_token is succeeded
+
+- name: Set k3s_token variable for remaining hosts
+  set_fact:
+    k3s_token: "{{ k3s_server_token.stdout }}"
+  when: k3s_server_token is succeeded
+  delegate_to: localhost
+  run_once: true
+
+- name: Join Kubernetes cluster pool on remaining hosts
+  shell: |
+    curl -sfL https://get.k3s.io |
+    K3S_URL=https://{{ groups['kubernetes_masters'][0] }}:6443 \
+    K3S_TOKEN={{ k3s_token }} \
+    sh -
+  args:
+    executable: /bin/bash
+  when: k3s_server_token is succeeded
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['kubernetes_masters'][1:] }}"

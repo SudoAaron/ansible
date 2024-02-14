@@ -1,0 +1,7 @@
+---
+- name: Apply netplan
+  shell: "netplan apply & disown"
+  become: yes
+  async: 0
+  poll: 0
+  timeout: 0

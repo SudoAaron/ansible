@@ -1,0 +1,12 @@
+[ubuntu]
+192.168.1.43 ansible_ssh_user=aaronwilliams ansible_ssh_common_args='-o StrictHostKeyChecking=no' hostname=pihole static_ip=192.168.1.153/24
+192.168.1.160 ansible_ssh_user=aaronwilliams ansible_ssh_common_args='-o StrictHostKeyChecking=no' hostname=kube01 static_ip=192.168.1.160/24
+192.168.1.161 ansible_ssh_user=aaronwilliams ansible_ssh_common_args='-o StrictHostKeyChecking=no' hostname=kube02 static_ip=192.168.1.161/24
+192.168.1.162 ansible_ssh_user=aaronwilliams ansible_ssh_common_args='-o StrictHostKeyChecking=no' hostname=kube03 static_ip=192.168.1.162/24
+192.168.1.163 ansible_ssh_user=aaronwilliams ansible_ssh_common_args='-o StrictHostKeyChecking=no' hostname=kube04 static_ip=192.168.1.163/24
+
+[kubernetes_masters]
+192.168.1.160
+192.168.1.161
+192.168.1.162
+192.168.1.163

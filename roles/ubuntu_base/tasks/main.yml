@@ -1,0 +1,14 @@
+---
+- name: Set hostname
+  hostname:
+    name: "{{ hostname }}"
+  become: yes
+
+- name: Configure static IP address using Netplan
+  template:
+    src: templates/netplan_config.yaml.j2
+    dest: /etc/netplan/01-netcfg.yaml
+  become: yes
+  vars:
+    gateway: "192.168.1.1"
+  notify: apply_netplan

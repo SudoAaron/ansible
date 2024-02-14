@@ -1,0 +1,13 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens18:
+      dhcp4: no
+      addresses:
+        - "{{ static_ip }}"
+      gateway4: "{{ gateway }}"
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 8.8.4.4
